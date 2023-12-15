@@ -2,16 +2,18 @@ use std::env;
 use std::fs::read_to_string;
 
 // "one","two","three","four","five","six","seven","eight","nine"
+// 53868
 fn main() {
     let file = env::args().nth(1).expect("File not provided");
     let file = read_to_string(file).expect("File does not exist");
     let lines = file.lines();
     let nums = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
     let word_nums = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
+    let zipped = nums.iter().zip(word_nums.iter()).collect::<Vec<_>>();
     let total = lines.into_iter()
         .filter(|line| line.contains(nums) || word_nums.iter().filter(|&&num| line.contains(num)).collect::<Vec<_>>().len() > 0)
         .map(|line| {
-            let mut f_pass = nums.iter().zip(word_nums.iter())
+            let mut f_pass = zipped.iter().copied()
                 .map(|(&c, &s)| {
                     let c_match = line.match_indices(c).collect::<Vec<_>>();
                     let s_match = line.match_indices(s).map(|v|{
@@ -36,7 +38,7 @@ fn main() {
             return f_pass;
         }
         ).fold(0, |acc, e| {
-        println!("{:?}",e);
+        //println!("{:?}",e);
         if e.len() == 0 { return acc; }
         let first = e.first().expect("first element not found");
         let second = e.last().expect("last element does not exist");
